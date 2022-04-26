@@ -3,9 +3,9 @@ import * as api from "../api";
 
 export const googleSignIn = createAsyncThunk(
   "auth/googleLogin",
-  async ({ profileObj, navigate, toast }, { rejectWithValue }) => {
+  async ({ result, navigate, toast }, { rejectWithValue }) => {
     try {
-      const response = await api.googleSignIn(profileObj);
+      const response = await api.googleSignIn(result);
       toast.success("Successfully logged in");
       navigate("/");
       return response.data;
@@ -17,6 +17,7 @@ export const googleSignIn = createAsyncThunk(
 
 export const login = createAsyncThunk(
   "auth/login",
+
   async ({ formValue, navigate, toast }, { rejectWithValue }) => {
     try {
       const response = await api.signIn(formValue);
@@ -45,10 +46,21 @@ export const register = createAsyncThunk(
 //create slice
 const authSlice = createSlice({
   name: "auth",
+
   initialState: {
     user: null,
     error: "",
     loading: false,
+  },
+  reducers: {
+    setUser: (state, action) => {
+      state.user = action.payload;
+    },
+
+    setLogout: (state, action) => {
+      localStorage.clear();
+      state.action = null;
+    },
   },
   extraReducers: {
     [login.pending]: (state, action) => {
@@ -103,3 +115,4 @@ const authSlice = createSlice({
 });
 
 export default authSlice.reducer;
+export const { setUser, setLogout } = authSlice.actions;

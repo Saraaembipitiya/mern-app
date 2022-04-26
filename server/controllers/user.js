@@ -59,7 +59,7 @@ exports.signin = async (req, res) => {
       );
 
       console.log(token);
-      return res.status(200).send({ user: oldUser, token: token });
+      return res.status(200).send({ result: oldUser, token: token });
     } else {
       return res.status(401).send("invalid password");
     }

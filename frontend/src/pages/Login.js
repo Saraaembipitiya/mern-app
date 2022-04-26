@@ -29,10 +29,13 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const googleSuccess = (res) => {
-    const { profileObj } = res;
-    profileObj.token = res.accessToken;
-    console.log(profileObj);
-    dispatch(googleSignIn({ profileObj, toast, navigate }));
+    const email = res?.profileObj?.email;
+    const name = res?.profileObj.name;
+    const token = res?.tokenId;
+    const googleId = res?.googleId;
+    const result = { email, name, token, googleId };
+
+    dispatch(googleSignIn({ result, toast, navigate }));
   };
 
   const googleFailure = (err) => {
