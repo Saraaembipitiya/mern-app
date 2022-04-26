@@ -4,7 +4,6 @@ const Tour = require("../models/tour");
 exports.createTour = async (req, res) => {
   try {
     req.body.creator = req.userID;
-
     const tour = Tour.create(req.body);
     res.status(200).send(tour);
   } catch (err) {

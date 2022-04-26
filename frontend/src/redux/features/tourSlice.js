@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { MDBAccordion } from "mdb-react-ui-kit";
 import * as api from "../api";
 
 export const createTour = createAsyncThunk(
@@ -7,7 +8,20 @@ export const createTour = createAsyncThunk(
     try {
       const response = await api.createTour(updatedTourData);
       toast.success("Tour Added Sucessfully ");
-      navigate("/");
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const getTours = createAsyncThunk(
+  "tour/getTours",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.getTours();
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -35,6 +49,17 @@ const tourSlice = createSlice({
     },
     [createTour.rejected]: (state, action) => {
       state.loading = false;
+      state.error = action.payload.message;
+    },
+    [getTours.pending]: (state, action) => {
+      state.loading = true;
+    },
+    [getTours.fulfilled]: (state, action) => {
+      state.loading = false;
+      console.log("working");
+      state.tours = action.payload;
+    },
+    [getTours.rejected]: (state, action) => {
       state.error = action.payload.message;
     },
   },
