@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { MDBCol, MDBContainer, MDBRow, MDBTypography } from "mdb-react-ui-kit";
 import CardTour from "../component/CardTour";
+import Spinner from "../component/Spinner";
 
 const Home = () => {
   const { loading, tours } = useSelector((state) => ({ ...state.tour }));
@@ -14,10 +15,10 @@ const Home = () => {
   useEffect(() => {
     dispatch(getTours());
   }, []);
-  if (loading) {
-    return <h1>Loading</h1>;
-  }
-  return (
+
+  return loading ? (
+    <Spinner />
+  ) : (
     <div
       style={{
         margin: "auto",

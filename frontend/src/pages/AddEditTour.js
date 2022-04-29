@@ -11,12 +11,13 @@ import {
 import ChipInput from "material-ui-chip-input";
 import FileBase from "react-file-base64";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { createTour } from "../redux/features/tourSlice";
+import { createTour, updateTour } from "../redux/features/tourSlice";
+import TouchRipple from "@material-ui/core/ButtonBase/TouchRipple";
 
 const initialState = {
   title: "",
@@ -26,26 +27,39 @@ const initialState = {
 };
 
 const AddEditTour = () => {
-  const { error } = useSelector((state) => ({ ...state.tour }));
+  const { error, loading, userTours } = useSelector((state) => ({
+    ...state.tour,
+  }));
   const { user } = useSelector((state) => ({ ...state.auth }));
   const [tourData, setTourData] = useState(initialState);
   const { title, description, tags } = tourData;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id) {
+      const singleTour = userTours.find((tour) => tour._id === id);
+      console.log(singleTour);
+      setTourData({ ...singleTour });
+    }
+  }, [id]);
   useEffect(() => {
     error && toast.error(error);
   }, [error]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(title);
-    console.log(description);
-    console.log(tags);
+
     if (title && description && tags) {
       const updatedTourData = { ...tourData, name: user?.result?.name };
-
-      dispatch(createTour({ updatedTourData, navigate, toast }));
+      if (id) {
+        dispatch(updateTour({ id, updatedTourData, toast, navigate }));
+      } else {
+        dispatch(createTour({ updatedTourData, navigate, toast }));
+      }
     }
+    handleClear();
   };
 
   const onInputChange = (e) => {
@@ -54,12 +68,8 @@ const AddEditTour = () => {
   };
 
   const handleAddTag = (tag) => {
-    console.log("working");
-    console.log(tag);
     setTourData({ ...tourData, tags: [...tourData.tags, tag] });
   };
-
-  console.log(tourData);
 
   const handleDeleteTag = (deleteTag) => {
     setTourData({
@@ -84,7 +94,7 @@ const AddEditTour = () => {
       className="container"
     >
       <MDBCard alignment="center">
-        <h1>Add tour</h1>
+        {id ? <h1>Update Tour</h1> : <h1>Add tour</h1>}
         <MDBCardBody>
           <MDBValidation>
             <div className="col-md-12" style={{ padding: "5px" }}>
@@ -141,7 +151,7 @@ const AddEditTour = () => {
             </div>
             <div className="col-12" style={{ padding: "5px" }}>
               <MDBBtn style={{ width: "100%" }} onClick={handleSubmit}>
-                Submit
+                {id ? "Update" : "Submit"}
               </MDBBtn>
               <MDBBtn
                 style={{ width: "100%" }}
